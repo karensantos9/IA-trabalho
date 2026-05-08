@@ -1,13 +1,13 @@
 {
-  "name": "Hill Climbing Correto",
+  "name": "Hill Climbing Correto JSON",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "hill-climbing",
+        "path": "8d247172-368f-4251-a8bf-ad7e75b70ba9",
         "options": {}
       },
-      "id": "ee7531e2-bb1f-420f-b2cc-29842e9cf8d0",
+      "id": "7fb84131-369f-4740-8259-c9185f4e9603",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
@@ -15,7 +15,7 @@
         0,
         0
       ],
-      "webhookId": "c0d39bb1-12c7-4e04-b6bf-c73da088ce51"
+      "webhookId": "8d247172-368f-4251-a8bf-ad7e75b70ba9"
     },
     {
       "parameters": {
@@ -39,7 +39,7 @@
         },
         "options": {}
       },
-      "id": "9d62ced6-6038-4ca2-90b7-471c15b8e35e",
+      "id": "c1fa6269-ca82-400e-8526-ae9373fad089",
       "name": "Edit Fields",
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
@@ -52,7 +52,7 @@
       "parameters": {
         "jsCode": "const n = $json.num_execucoes;\n\nreturn Array.from({ length: n }, (_, i) => ({\n  json: {\n    execucao: i + 1,\n    max_iter: $json.max_iter,\n    variante: $json.variante\n  }\n}));"
       },
-      "id": "dfc65608-bc8b-423f-ad92-0935dec0695e",
+      "id": "ed24b365-1545-4b26-8a46-2013bc8d41f8",
       "name": "Gerar Execuções",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -66,7 +66,7 @@
         "batchSize": 1,
         "options": {}
       },
-      "id": "ba05b811-a3cf-4941-9019-83dccc6d77fe",
+      "id": "1585653e-a16c-40f7-b5b6-29f3cb0e81ac",
       "name": "Loop Over Items",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 1,
@@ -79,7 +79,7 @@
       "parameters": {
         "jsCode": "return items;"
       },
-      "id": "d9cfeba7-a287-45d9-b963-244d1c515950",
+      "id": "734fe24c-7c3b-4e11-a213-6bf5e5e2d8ae",
       "name": "Parse Resultado",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -87,28 +87,6 @@
         1008,
         0
       ]
-    },
-    {
-      "parameters": {
-        "operation": "append",
-        "sheetId": "18Ec2w55KDzpowpaaRYhwvJQp_qrcDM85hz3Q0Kg_FLk",
-        "range": "resultado_hill!A:J",
-        "options": {}
-      },
-      "id": "d72ed957-f091-45fd-ada6-3a08f07ee026",
-      "name": "Salvar no Google Sheets",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 2,
-      "position": [
-        1200,
-        0
-      ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "vRXvkffUHdR5tq00",
-          "name": "Google Sheets account 4"
-        }
-      }
     },
     {
       "parameters": {
@@ -126,7 +104,7 @@
               "value": "={{ $json.variante }}"
             },
             {
-              "name": "=num_execucoes",
+              "name": "=execucao ",
               "value": "={{ $json.execucao }}"
             }
           ]
@@ -139,8 +117,37 @@
         816,
         0
       ],
-      "id": "94e68e55-6a5b-413a-8fac-80e3065289cb",
+      "id": "a82e72ba-9c88-42d6-994f-0ec31d4c2ba5",
       "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const all = $input.all().map(i => i.json);\n\nreturn [\n  {\n    json: {\n      total_execucoes: all.length,\n      dados: all\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        0
+      ],
+      "id": "f128f4ab-446a-4194-9135-1b3c0fb9d4bf",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {
+          "fileName": "resultado.json"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        0
+      ],
+      "id": "8618d63a-4336-47bb-a9d4-2dba2e770b90",
+      "name": "Convert to File"
     }
   ],
   "pinData": {
@@ -205,7 +212,7 @@
       "main": [
         [
           {
-            "node": "Salvar no Google Sheets",
+            "node": "Code in JavaScript",
             "type": "main",
             "index": 0
           }
@@ -234,11 +241,16 @@
         ]
       ]
     },
-    "Salvar no Google Sheets": {
+    "Code in JavaScript": {
       "main": [
         [
           {
             "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Convert to File",
             "type": "main",
             "index": 0
           }
@@ -252,11 +264,11 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "6a1d5f8b-c329-4d0c-8451-14bb201823f2",
+  "versionId": "a45c92a5-86e3-47c3-8bd7-70cea91ee416",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "74108ecfe7c6671d3e061d22795f550d69a9217875bc8b5fce688567110b9810"
   },
-  "id": "F18RQuwxj9SzGkGI",
+  "id": "YGUfkySuovsxRXHo",
   "tags": []
 }
